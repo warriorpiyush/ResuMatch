@@ -1,0 +1,145 @@
+"use client"
+
+import type React from "react"
+
+import { SidebarNav } from "@/components/sidebar-nav"
+import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { BarChart3, Sparkles, Briefcase, Settings } from "lucide-react"
+import { useState } from "react"
+
+const navItems = [
+  { label: "Dashboard", href: "/dashboard", icon: <BarChart3 className="w-5 h-5" /> },
+  { label: "My Resume", href: "/dashboard/resume", icon: <Sparkles className="w-5 h-5" /> },
+  { label: "Job Matches", href: "/dashboard/matches", icon: <Briefcase className="w-5 h-5" />, badge: "12" },
+  { label: "Settings", href: "/dashboard/settings", icon: <Settings className="w-5 h-5" /> },
+]
+
+export default function SettingsPage() {
+  const [formData, setFormData] = useState({
+    firstName: "John",
+    lastName: "Doe",
+    email: "john@example.com",
+    phone: "+1 (555) 123-4567",
+    jobTitle: "Full Stack Developer",
+    experience: "5+",
+    location: "San Francisco, CA",
+  })
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
+  return (
+    <div className="flex h-screen bg-background">
+      <SidebarNav items={navItems} title="Candidate" subtitle="Settings" />
+
+      <main className="flex-1 overflow-auto md:ml-0">
+        <div className="p-6 md:p-8 max-w-2xl mx-auto space-y-8">
+          <div className="pt-12 md:pt-0">
+            <h1 className="text-4xl font-bold text-foreground mb-2">Settings</h1>
+            <p className="text-muted-foreground">Manage your profile and preferences</p>
+          </div>
+
+          {/* Profile Settings */}
+          <Card className="border border-border bg-card p-8 space-y-6">
+            <div>
+              <h3 className="text-lg font-bold text-foreground mb-1">Profile Information</h3>
+              <p className="text-sm text-muted-foreground">Update your personal information</p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-foreground">First Name</label>
+                <Input
+                  name="firstName"
+                  value={formData.firstName}
+                  onChange={handleChange}
+                  className="bg-background border-border text-foreground"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-foreground">Last Name</label>
+                <Input
+                  name="lastName"
+                  value={formData.lastName}
+                  onChange={handleChange}
+                  className="bg-background border-border text-foreground"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-foreground">Email</label>
+                <Input
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="bg-background border-border text-foreground"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-foreground">Phone</label>
+                <Input
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="bg-background border-border text-foreground"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-foreground">Job Title</label>
+                <Input
+                  name="jobTitle"
+                  value={formData.jobTitle}
+                  onChange={handleChange}
+                  className="bg-background border-border text-foreground"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-foreground">Location</label>
+                <Input
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  className="bg-background border-border text-foreground"
+                />
+              </div>
+            </div>
+
+            <Button className="btn-primary">Save Changes</Button>
+          </Card>
+
+          {/* Notification Preferences */}
+          <Card className="border border-border bg-card p-8 space-y-6">
+            <div>
+              <h3 className="text-lg font-bold text-foreground mb-1">Notification Preferences</h3>
+              <p className="text-sm text-muted-foreground">Choose how you want to be notified</p>
+            </div>
+
+            <div className="space-y-4">
+              {[
+                {
+                  id: "newMatches",
+                  label: "New Job Matches",
+                  description: "Get notified about new jobs that match your profile",
+                },
+                { id: "applications", label: "Application Updates", description: "Updates on your applications" },
+                { id: "newsletters", label: "Career Newsletters", description: "Weekly career tips and insights" },
+              ].map((pref) => (
+                <label key={pref.id} className="flex items-start gap-3 cursor-pointer">
+                  <input type="checkbox" defaultChecked className="w-5 h-5 rounded border-border mt-1 cursor-pointer" />
+                  <div>
+                    <p className="font-medium text-foreground">{pref.label}</p>
+                    <p className="text-xs text-muted-foreground">{pref.description}</p>
+                  </div>
+                </label>
+              ))}
+            </div>
+          </Card>
+        </div>
+      </main>
+    </div>
+  )
+}
