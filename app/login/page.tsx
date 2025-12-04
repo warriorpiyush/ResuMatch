@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { ArrowRight } from "lucide-react"
+import { authService } from "@/lib/auth"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -17,12 +18,27 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    // Simulate login - in production, call an API
-    setTimeout(() => {
+    try {
+      const response = await authService.login({
+        username: email, // Backend now expects email in the username field
+        password: password
+      })
+
+      // Check if we got tokens (JWT response returns access/refresh directly, not wrapped in success)
+      if (response.access || response.data?.access) {
+        // Fetch user details to know the role
+        const user = await authService.getCurrentUser()
+        if (user.data.role === 'RECRUITER') {
+          window.location.href = "/recruiter/dashboard"
+        } else {
+          window.location.href = "/dashboard"
+        }
+      }
+    } catch (error: any) {
+      alert(error.response?.data?.detail || error.response?.data?.message || "Login failed")
+    } finally {
       setLoading(false)
-      // Redirect based on user type
-      window.location.href = "/dashboard"
-    }, 1000)
+    }
   }
 
   return (

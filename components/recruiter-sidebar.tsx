@@ -8,6 +8,7 @@ import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Menu, X, LogOut, Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { authService } from "@/lib/auth"
 
 interface NavItem {
   label: string
@@ -84,6 +85,10 @@ export function RecruiterSidebar({ items, title, subtitle }: RecruiterSidebarPro
           <Button
             variant="outline"
             className="w-full border-border text-foreground hover:bg-muted gap-2 bg-transparent"
+            onClick={() => {
+              authService.logout()
+              window.location.href = "/login"
+            }}
           >
             <LogOut className="w-4 h-4" />
             Sign Out

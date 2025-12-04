@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { ArrowRight } from "lucide-react"
+import { authService } from "@/lib/auth"
 
 export default function RegisterPage() {
   const searchParams = useSearchParams()
@@ -35,11 +36,36 @@ export default function RegisterPage() {
       return
     }
     setLoading(true)
-    // Simulate registration - in production, call an API
-    setTimeout(() => {
+
+    try {
+      // Split name into first and last name
+      const nameParts = formData.name.split(' ')
+      const firstName = nameParts[0]
+      const lastName = nameParts.slice(1).join(' ') || ''
+
+      const response = await authService.register({
+        username: formData.email.split('@')[0] + Math.floor(Math.random() * 1000), // Generate a username
+        email: formData.email,
+        password: formData.password,
+        first_name: firstName,
+        last_name: lastName,
+        role: userType.toUpperCase()
+      })
+
+      if (response.success) {
+        // Auto login after register
+        await authService.login({
+          username: response.data.username,
+          password: formData.password
+        })
+        window.location.href = userType === "candidate" ? "/dashboard" : "/recruiter/dashboard"
+      }
+    } catch (error: any) {
+      alert(error.response?.data?.message || "Registration failed")
+      console.error(error)
+    } finally {
       setLoading(false)
-      window.location.href = userType === "candidate" ? "/dashboard" : "/recruiter/dashboard"
-    }, 1000)
+    }
   }
 
   return (
@@ -65,21 +91,19 @@ export default function RegisterPage() {
             <div className="flex gap-3">
               <button
                 onClick={() => setUserType("candidate")}
-                className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
-                  userType === "candidate"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-secondary-foreground hover:opacity-80"
-                }`}
+                className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${userType === "candidate"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-secondary-foreground hover:opacity-80"
+                  }`}
               >
                 Candidate
               </button>
               <button
                 onClick={() => setUserType("recruiter")}
-                className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
-                  userType === "recruiter"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-secondary text-secondary-foreground hover:opacity-80"
-                }`}
+                className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${userType === "recruiter"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-secondary text-secondary-foreground hover:opacity-80"
+                  }`}
               >
                 Recruiter
               </button>
